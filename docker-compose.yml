@@ -27,7 +27,7 @@ services:
   # S3 Service (LocalStack)
   # ==========================================
   localstack:
-    image: localstack/localstack-community:latest
+    image: localstack/localstack:3.4.0
     container_name: qrcode-localstack
     ports:
       - "4566:4566"

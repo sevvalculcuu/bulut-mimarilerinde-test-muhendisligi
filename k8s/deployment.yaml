@@ -51,7 +51,7 @@ spec:
     spec:
       containers:
         - name: localstack
-          image: localstack/localstack-community:latest
+          image: localstack/localstack:3.4.0
           env:
             - name: SERVICES
               value: "s3"
