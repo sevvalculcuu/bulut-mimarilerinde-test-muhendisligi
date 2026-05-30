@@ -6,7 +6,7 @@
 **Term Project (Topic 35: QR Code Generator Service)**  
 
 * Geliştirenler: 
-  * **Şevval Çülcü** (Öğrenci No: 171423961)  
+  * **Şevval Çulcu** (Öğrenci No: 171423961)  
   * **Yusuf Durmuş** (Öğrenci No: 170423965)  
 * Eğitmen: **Büşra Ayaksız** (busra.ayaksiz@useinsider.com)  
 * Lisans: **MIT**  
