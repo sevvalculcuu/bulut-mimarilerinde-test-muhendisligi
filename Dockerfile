@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy requirements list
 COPY requirements.txt .
 
-# Install dependencies into a wheels directory
-RUN pip install --no-cache-dir --user -r requirements.txt
+# Install dependencies globally inside builder stage
+RUN pip install --no-cache-dir -r requirements.txt
 
 # ==========================================
 # Stage 2: Final Secure Runner
@@ -24,18 +24,19 @@ FROM python:3.11-slim AS runner
 
 WORKDIR /app
 
-# Install runtime PostgreSQL client library dependencies
+# Install runtime PostgreSQL client library dependencies and curl
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy installed packages from builder
-COPY --from=builder /root/.local /root/.local
+# Copy python dependencies packages and binaries from builder
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Copy codebase
 COPY . /app
 
-# Set python path and environment
-ENV PATH=/root/.local/bin:$PATH
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
 

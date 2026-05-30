@@ -87,7 +87,9 @@ def startup_event():
 def index_page(request: Request, db: Session = Depends(get_db)):
     qrcodes = db.query(QRCodeModel).order_by(QRCodeModel.id.desc()).all()
     return templates.TemplateResponse(
-        "index.html", {"request": request, "qrcodes": qrcodes}
+        request=request,
+        name="index.html",
+        context={"request": request, "qrcodes": qrcodes},
     )
 
 
