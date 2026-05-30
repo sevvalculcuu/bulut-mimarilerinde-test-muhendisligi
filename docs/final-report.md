@@ -2,7 +2,7 @@
 ## Q-Flow: Bulut Tabanlı, Dinamik ve Uçtan Uca Takip Edilebilir QR Kod Yönetim Sistemi
 
 **Öğrenciler:**  
-* Şevval Çülcü (171423961)  
+* Şevval Çulcu (171423961)  
 * Yusuf Durmuş (170423965)  
 
 ---
@@ -103,9 +103,9 @@ Bu proje sayesinde:
 
 ### 7. İş Paylaşımı ve Katkı İstatistikleri
 
-Proje, Şevval Çülcü ve Yusuf Durmuş tarafından ortaklaşa geliştirilmiştir.
+Proje, Şevval Çulcu ve Yusuf Durmuş tarafından ortaklaşa geliştirilmiştir.
 
-- **Şevval Çülcü (171423961)**:
+- **Şevval Çulcu (171423961)**:
   - Kodlama: QR üretici motorunun yazılması.
   - Testler: Pytest unit testleri, Testcontainers entegrasyon testleri.
   - DevOps & GitOps: Multi-stage Dockerfile, docker-compose, Kubernetes manifestleri.
