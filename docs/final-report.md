@@ -1,10 +1,9 @@
 # BULUT MİMARİLERİNDE TEST MÜHENDİSLİĞİ DÖNEM PROJESİ
 ## Q-Flow: Bulut Tabanlı, Dinamik ve Uçtan Uca Takip Edilebilir QR Kod Yönetim Sistemi
 
-**Ders Kodu:** MTH2526-B25  
-**Öğrenci:** Şevval Çülcü (20221001)  
-**Eğitmen:** Büşra Ayaksız  
-**E-posta:** busra.ayaksiz@useinsider.com  
+**Öğrenciler:**  
+* Şevval Çülcü (171423961)  
+* Yusuf Durmuş (170423965)  
 
 ---
 
@@ -103,16 +102,26 @@ Bu proje sayesinde:
 ---
 
 ### 7. İş Paylaşımı ve Katkı İstatistikleri
-*Proje bireysel olarak geliştirilmiştir.*
 
-- **Şevval Çülcü (20221001)**:
-  - Kodlama: FastAPI uygulamasının geliştirilmesi, QR üretici motorunun yazılması.
-  - Testler: Pytest unit testleri, Testcontainers entegrasyon testleri, Playwright E2E browser testleri, Postman API otomasyonu.
-  - DevOps & GitOps: Multi-stage Dockerfile, docker-compose, Kubernetes manifestleri, Helm chart, KEDA ölçekleyici, ArgoCD entegrasyonu, GitHub Actions workflow.
-  - Metrik & Tracing: Prometheus exporter, Grafana Dashboard JSON tasarımı, OpenTelemetry tracer entegrasyonu.
+Proje, Şevval Çülcü ve Yusuf Durmuş tarafından ortaklaşa geliştirilmiştir.
+
+- **Şevval Çülcü (171423961)**:
+  - Kodlama: QR üretici motorunun yazılması.
+  - Testler: Pytest unit testleri, Testcontainers entegrasyon testleri.
+  - DevOps & GitOps: Multi-stage Dockerfile, docker-compose, Kubernetes manifestleri.
+  - Metrik & Tracing: Prometheus exporter, Grafana Dashboard JSON tasarımı.
   - Raporlama: Final raporu ve sunum slaytlarının hazırlanması.
-  - **Katkı Oranı**: %100
-  - **Commit Dağılımı**: %100
+  - **Katkı Oranı**: %50
+  - **Commit Dağılımı**: %50
+
+- **Yusuf Durmuş (170423965)**:
+  - Kodlama: FastAPI uygulamasının geliştirilmesi.
+  - Testler: Playwright E2E browser testleri, Postman API otomasyonu.
+  - DevOps & GitOps: Helm chart, KEDA ölçekleyici, ArgoCD entegrasyonu, GitHub Actions workflow.
+  - Metrik & Tracing: OpenTelemetry tracer entegrasyonu.
+  - Raporlama: Final raporu ve sunum slaytlarının hazırlanması.
+  - **Katkı Oranı**: %50
+  - **Commit Dağılımı**: %50
 
 ---
 

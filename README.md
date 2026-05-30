@@ -5,7 +5,9 @@
 **MTH2526-B25 — Testing Engineering in Cloud Architectures (2025–2026)**  
 **Term Project (Topic 35: QR Code Generator Service)**  
 
-* Geliştiren: **Şevval Çülcü** (Öğrenci No: 20221001)  
+* Geliştirenler: 
+  * **Şevval Çülcü** (Öğrenci No: 171423961)  
+  * **Yusuf Durmuş** (Öğrenci No: 170423965)  
 * Eğitmen: **Büşra Ayaksız** (busra.ayaksiz@useinsider.com)  
 * Lisans: **MIT**  
 

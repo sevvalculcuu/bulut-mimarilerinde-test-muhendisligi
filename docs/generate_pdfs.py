@@ -96,7 +96,7 @@ def build_final_report_pdf(filename):
     # Metadata Box
     metadata_data = [
         [Paragraph("<b>Ders Kodu / Adi:</b> MTH2526-B25 - Bulut Mimarilerinde Test Muhendisligi", body_style)],
-        [Paragraph("<b>Ogrenci:</b> Sevval Culcu (20221001)", body_style)],
+        [Paragraph("<b>Ogrenciler:</b> Sevval Culcu (171423961) & Yusuf Durmus (170423965)", body_style)],
         [Paragraph("<b>Egitmen:</b> Busra Ayaksiz (busra.ayaksiz@useinsider.com)", body_style)]
     ]
     metadata_table = Table(metadata_data, colWidths=[450])
@@ -236,8 +236,9 @@ def build_final_report_pdf(filename):
 
     story.append(Paragraph("7. Is Paylasimi ve Katki Istatistikleri", section_style))
     story.append(Paragraph(
-        "Proje bireysel olarak Sevval Culcu tarafindan gelistirilmistir. Kodlama, Testler (Unit, Integration, E2E, API), DevOps & GitOps, "
-        "Monitoring, Tracing ve Raporlama adimlarinin tamamindaki katki orani %100'dur.",
+        "Proje, Sevval Culcu ve Yusuf Durmus tarafindan ortaklasa gelistirilmistir.<br/>"
+        "<b>Sevval Culcu (171423961)</b>: Kodlama (QR uretici), Testler (Pytest unit, Testcontainers integration), DevOps (Dockerfile, docker-compose, K8s manifests), Metrik & Tracing (Prometheus exporter, Grafana Dashboard), Raporlama (Final raporu & Slaytlar). Katki: %50. Commit: %50.<br/>"
+        "<b>Yusuf Durmus (170423965)</b>: Kodlama (FastAPI app), Testler (Playwright E2E, Postman API), DevOps (Helm chart, KEDA, ArgoCD, GHA workflow), Metrik & Tracing (OpenTelemetry), Raporlama (Final raporu & Slaytlar). Katki: %50. Commit: %50.",
         body_style
     ))
     
@@ -317,7 +318,7 @@ def build_slides_pdf(filename):
     story.append(Spacer(1, 100))
     story.append(Paragraph("Q-FLOW: CLOUD-NATIVE QR CODE GENERATOR", cover_title_style))
     story.append(Paragraph("MTH2526-B25 Cloud Architecture and Testing Engineering Term Project", cover_subtitle_style))
-    story.append(Paragraph("<font color='#6b7280'>Ogrenci: </font>Sevval Culcu (20221001) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color='#6b7280'>Egitmen: </font>Busra Ayaksiz", slide_content_style))
+    story.append(Paragraph("<font color='#6b7280'>Ogrenciler: </font>Sevval Culcu (171423961) & Yusuf Durmus (170423965) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color='#6b7280'>Egitmen: </font>Busra Ayaksiz", slide_content_style))
     story.append(PageBreak())
     
     # --- Slide 2: Problem & Solution ---
