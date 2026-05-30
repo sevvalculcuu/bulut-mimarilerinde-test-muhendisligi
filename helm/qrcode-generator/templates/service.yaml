@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qrcode-generator.fullname" . }}-postgres-service
+  labels:
+    {{- include "qrcode-generator.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: {{ include "qrcode-generator.fullname" . }}-postgres
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qrcode-generator.fullname" . }}-localstack-service
+  labels:
+    {{- include "qrcode-generator.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 4566
+      targetPort: 4566
+  selector:
+    app: {{ include "qrcode-generator.fullname" . }}-localstack
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qrcode-generator.fullname" . }}-jaeger-service
+  labels:
+    {{- include "qrcode-generator.labels" . | nindent 4 }}
+spec:
+  ports:
+    - name: ui
+      port: 16686
+      targetPort: 16686
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+  selector:
+    app: {{ include "qrcode-generator.fullname" . }}-jaeger
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qrcode-generator.fullname" . }}-app-service
+  labels:
+    {{- include "qrcode-generator.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 8000
+      nodePort: {{ .Values.service.nodePort }}
+  selector:
+    app: {{ include "qrcode-generator.fullname" . }}-app
+  type: {{ .Values.service.type }}

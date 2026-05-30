@@ -1,0 +1,55 @@
+# Default values for qrcode-generator.
+# This is a YAML-formatted file.
+
+replicaCount: 2
+
+image:
+  repository: qrcode-app
+  pullPolicy: Never
+  tag: "latest"
+
+service:
+  type: NodePort
+  port: 8000
+  nodePort: 30080
+
+postgres:
+  image: postgres:16-alpine
+  database: qrcode_db
+  user: postgres
+  password: postgres
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+localstack:
+  image: localstack/localstack:latest
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+jaeger:
+  image: jaegertracing/all-in-one:latest
+  resources:
+    limits:
+      cpu: 300m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

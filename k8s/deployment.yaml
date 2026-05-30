@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qrcode-postgres
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qrcode-postgres
+  template:
+    metadata:
+      labels:
+        app: qrcode-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "postgres"
+            - name: POSTGRES_DB
+              value: "qrcode_db"
+          ports:
+            - containerPort: 5432
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qrcode-localstack
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qrcode-localstack
+  template:
+    metadata:
+      labels:
+        app: qrcode-localstack
+    spec:
+      containers:
+        - name: localstack
+          image: localstack/localstack:latest
+          env:
+            - name: SERVICES
+              value: "s3"
+            - name: DEFAULT_REGION
+              value: "us-east-1"
+          ports:
+            - containerPort: 4566
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qrcode-jaeger
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qrcode-jaeger
+  template:
+    metadata:
+      labels:
+        app: qrcode-jaeger
+    spec:
+      containers:
+        - name: jaeger
+          image: jaegertracing/all-in-one:latest
+          env:
+            - name: COLLECTOR_OTLP_ENABLED
+              value: "true"
+          ports:
+            - containerPort: 16686
+            - containerPort: 4317
+          resources:
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qrcode-app
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: qrcode-app
+  template:
+    metadata:
+      labels:
+        app: qrcode-app
+    spec:
+      containers:
+        - name: qrcode-app
+          image: qrcode-app:latest
+          imagePullPolicy: Never # Uses local minikube cache image
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: qrcode-config
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              value: "test"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "test"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"

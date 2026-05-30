@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qrcode-generator.fullname" . }}-postgres
+  labels:
+    {{- include "qrcode-generator.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "qrcode-generator.fullname" . }}-postgres
+  template:
+    metadata:
+      labels:
+        app: {{ include "qrcode-generator.fullname" . }}-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: "{{ .Values.postgres.image }}"
+          env:
+            - name: POSTGRES_USER
+              value: "{{ .Values.postgres.user }}"
+            - name: POSTGRES_PASSWORD
+              value: "{{ .Values.postgres.password }}"
+            - name: POSTGRES_DB
+              value: "{{ .Values.postgres.database }}"
+          ports:
+            - containerPort: 5432
+          resources:
+            {{- toYaml .Values.postgres.resources | nindent 12 }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qrcode-generator.fullname" . }}-localstack
+  labels:
+    {{- include "qrcode-generator.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "qrcode-generator.fullname" . }}-localstack
+  template:
+    metadata:
+      labels:
+        app: {{ include "qrcode-generator.fullname" . }}-localstack
+    spec:
+      containers:
+        - name: localstack
+          image: "{{ .Values.localstack.image }}"
+          env:
+            - name: SERVICES
+              value: "s3"
+            - name: DEFAULT_REGION
+              value: "us-east-1"
+          ports:
+            - containerPort: 4566
+          resources:
+            {{- toYaml .Values.localstack.resources | nindent 12 }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qrcode-generator.fullname" . }}-jaeger
+  labels:
+    {{- include "qrcode-generator.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "qrcode-generator.fullname" . }}-jaeger
+  template:
+    metadata:
+      labels:
+        app: {{ include "qrcode-generator.fullname" . }}-jaeger
+    spec:
+      containers:
+        - name: jaeger
+          image: "{{ .Values.jaeger.image }}"
+          env:
+            - name: COLLECTOR_OTLP_ENABLED
+              value: "true"
+          ports:
+            - containerPort: 16686
+            - containerPort: 4317
+          resources:
+            {{- toYaml .Values.jaeger.resources | nindent 12 }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qrcode-generator.fullname" . }}-app
+  labels:
+    {{- include "qrcode-generator.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "qrcode-generator.fullname" . }}-app
+  template:
+    metadata:
+      labels:
+        app: {{ include "qrcode-generator.fullname" . }}-app
+    spec:
+      containers:
+        - name: qrcode-app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: {{ include "qrcode-generator.fullname" . }}-config
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              value: "test"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "test"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

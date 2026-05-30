@@ -1,0 +1,107 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  pipeline:
+    name: Lint, Test, Build & Smoke Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # ==========================================
+      # 1. Checkout Codebase
+      # ==========================================
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # ==========================================
+      # 2. Setup Python environment
+      # ==========================================
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # ==========================================
+      # 3. Install Python Dependencies
+      # ==========================================
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ==========================================
+      # 4. Code Linting (Black & Ruff)
+      # ==========================================
+      - name: Run Linters
+        run: |
+          black --check src/ tests/ || echo "Black formatting issues found"
+          ruff check src/ tests/ || echo "Ruff lint issues found"
+
+      # ==========================================
+      # 5. Run Pytest Suite (Coverage >= 70%)
+      # ==========================================
+      - name: Run Pytest & Measure Coverage
+        run: |
+          # Testcontainers will automatically spin up temporary docker containers for Postgres/LocalStack
+          pytest tests/unit/ tests/integration/ -v --cov=src --cov-report=term-missing --cov-fail-under=70
+
+      # ==========================================
+      # 6. Docker Build Image
+      # ==========================================
+      - name: Build Docker Image
+        run: |
+          docker build -t qrcode-app:${{ github.sha }} .
+          docker tag qrcode-app:${{ github.sha }} qrcode-app:latest
+
+      # ==========================================
+      # 7. Kubernetes / Helm Deployment Dry-Run
+      # ==========================================
+      - name: Lint and Dry-Run Helm Charts
+        run: |
+          helm lint helm/qrcode-generator
+          helm template helm/qrcode-generator --debug
+
+      # ==========================================
+      # 8. Smoke Testing (FastAPI + Newman)
+      # ==========================================
+      - name: Start App container for Smoke Test
+        run: |
+          # Spin up a temporary SQLite/mock S3 instance of the app inside Docker
+          docker run -d -p 8000:8000 \
+            -e DATABASE_URL=sqlite:///./qrcode.db \
+            -e AWS_ENDPOINT_URL=none \
+            --name smoke-test-app \
+            qrcode-app:latest
+          
+          # Wait for container startup health check (up to 30s)
+          echo "Waiting for app to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/healthz | grep -q "healthy"; then
+              echo "App is healthy and running!"
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Install Node & Newman
+        uses: actions/setup-node@v4
+        with:
+          node-id: "20"
+          node-version: "20"
+
+      - name: Run Postman Newman Smoke Test
+        run: |
+          npm install -g newman
+          newman run postman/collection.json --env-var "baseUrl=http://localhost:8000"
+
+      - name: Stop App Container
+        if: always()
+        run: |
+          docker stop smoke-test-app || true
+          docker rm smoke-test-app || true

@@ -1,0 +1,132 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # Database Service (PostgreSQL)
+  # ==========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: qrcode-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: qrcode_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d qrcode_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - qrcode-network
+
+  # ==========================================
+  # S3 Service (LocalStack)
+  # ==========================================
+  localstack:
+    image: localstack/localstack:latest
+    container_name: qrcode-localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3
+      - DEFAULT_REGION=us-east-1
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      - localstack:/var/lib/localstack
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4566/_localstack/health | grep '\\\"s3\\\": \\\"available\\\"'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - qrcode-network
+
+  # ==========================================
+  # Distributed Tracing (Jaeger)
+  # ==========================================
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: qrcode-jaeger
+    ports:
+      - "16686:16686" # UI Dashboard
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - qrcode-network
+
+  # ==========================================
+  # FastAPI Application
+  # ==========================================
+  qrcode-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qrcode-app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/qrcode_db
+      - AWS_ENDPOINT_URL=http://localstack:4566
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_S3_BUCKET_NAME=qrcode-bucket
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - OTEL_SERVICE_NAME=qrcode-generator-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    networks:
+      - qrcode-network
+
+  # ==========================================
+  # Monitoring: Prometheus
+  # ==========================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: qrcode-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - qrcode-app
+    networks:
+      - qrcode-network
+
+  # ==========================================
+  # Monitoring: Grafana
+  # ==========================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: qrcode-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - qrcode-network
+
+volumes:
+  pgdata:
+  localstack:
+  grafana-data:
+
+networks:
+  qrcode-network:
+    driver: bridge

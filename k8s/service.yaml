@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qrcode-postgres-service
+  namespace: default
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: qrcode-postgres
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qrcode-localstack-service
+  namespace: default
+spec:
+  ports:
+    - port: 4566
+      targetPort: 4566
+  selector:
+    app: qrcode-localstack
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qrcode-jaeger-service
+  namespace: default
+spec:
+  ports:
+    - name: ui
+      port: 16686
+      targetPort: 16686
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+  selector:
+    app: qrcode-jaeger
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qrcode-app-service
+  namespace: default
+spec:
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30080
+  selector:
+    app: qrcode-app
+  type: NodePort
