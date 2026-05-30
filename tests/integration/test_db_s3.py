@@ -27,7 +27,7 @@ def test_database_and_s3_integration():
         print(f"PostgreSQL container running at: {postgres_url}")
 
         # 2. Start LocalStack Container
-        with LocalStackContainer("localstack/localstack:latest") as localstack:
+        with LocalStackContainer("localstack/localstack-community:latest") as localstack:
             # LocalStack starts all services, we retrieve the endpoint URL
             s3_url = localstack.get_url()
             print(f"LocalStack container running at: {s3_url}")

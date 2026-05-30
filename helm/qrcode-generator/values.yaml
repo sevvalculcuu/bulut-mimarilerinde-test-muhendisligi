@@ -27,7 +27,7 @@ postgres:
       memory: 128Mi
 
 localstack:
-  image: localstack/localstack:latest
+  image: localstack/localstack-community:latest
   resources:
     limits:
       cpu: 500m
