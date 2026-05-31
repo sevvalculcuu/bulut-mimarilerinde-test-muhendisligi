@@ -72,10 +72,27 @@ jobs:
       # ==========================================
       - name: Start App container for Smoke Test
         run: |
-          # Spin up a temporary SQLite/mock S3 instance of the app inside Docker
-          docker run -d -p 8000:8000 \
+          # Start LocalStack for mock S3
+          docker run -d --network host --name smoke-localstack localstack/localstack:3.4.0
+          
+          # Wait for LocalStack S3 to be ready
+          echo "Waiting for LocalStack S3..."
+          for i in {1..30}; do
+            if curl -s http://localhost:4566/_localstack/health | grep -q '"s3": "running"'; then
+              echo "LocalStack S3 is ready!"
+              break
+            fi
+            sleep 1
+          done
+          
+          # Spin up app container on host network pointing to localstack S3
+          docker run -d --network host \
             -e DATABASE_URL=sqlite:///./qrcode.db \
-            -e AWS_ENDPOINT_URL=none \
+            -e AWS_ENDPOINT_URL=http://localhost:4566 \
+            -e AWS_DEFAULT_REGION=us-east-1 \
+            -e AWS_ACCESS_KEY_ID=test \
+            -e AWS_SECRET_ACCESS_KEY=test \
+            -e AWS_S3_BUCKET_NAME=qrcode-bucket \
             --name smoke-test-app \
             qrcode-app:latest
           
@@ -92,7 +109,6 @@ jobs:
       - name: Install Node & Newman
         uses: actions/setup-node@v4
         with:
-          node-id: "20"
           node-version: "20"
 
       - name: Run Postman Newman Smoke Test
@@ -105,3 +121,5 @@ jobs:
         run: |
           docker stop smoke-test-app || true
           docker rm smoke-test-app || true
+          docker stop smoke-localstack || true
+          docker rm smoke-localstack || true

@@ -278,4 +278,4 @@ def delete_qrcode_form(id: int, db: Session = Depends(get_db)):
 # Health Check-live demo version
 @app.get("/healthz", status_code=status.HTTP_200_OK)
 def health_check():
-    return {"status": "healthy", "service": "qrcode-generator-service"}
+    return {"status": "healthy", "service": "qrcode-generator-service", "live_demo": "active"}
