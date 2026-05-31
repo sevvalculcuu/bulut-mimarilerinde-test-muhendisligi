@@ -19,5 +19,4 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Exclude GitHub actions from IDE push (user will push manually)
-.github/
+
