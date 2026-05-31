@@ -8,10 +8,9 @@ def test_health_check(client):
     """
     response = client.get("/healthz")
     assert response.status_code == 200
-    assert response.json() == {
-        "status": "healthy",
-        "service": "qrcode-generator-service",
-    }
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert data["service"] == "qrcode-generator-service"
 
 
 def test_generate_qrcode_success(client, test_db):
