@@ -158,6 +158,6 @@ kubectl apply -f argocd/application.yaml
 
 ## 🎥 Canlı Sunum Can Simidi (Demo Videosu)
 Sunum esnasında canlı demoda çıkabilecek teknik aksaklıklara karşı hazırlanan yedek demo videosu linki:
-* **Demo Videosu**: [Google Drive / YouTube Linki](https://drive.google.com/drive/folders/your-folder-id-here)
+* **Demo Videosu**: [Google Drive / YouTube Linki]([https://drive.google.com/drive/folders/your-folder-id-here](https://drive.google.com/file/d/1DgMoOCOM7MNNNxCdYwgvzoprd1IPVQKO/view?usp=sharing))
 * **Sunum Slaytları**: [docs/slides.pdf](file:///Users/sevvalculcu/bulutproje/docs/slides.pdf) konumunda hazırdır.
 * **Akademik Rapor**: [docs/final-report.pdf](file:///Users/sevvalculcu/bulutproje/docs/final-report.pdf) konumundadır.
