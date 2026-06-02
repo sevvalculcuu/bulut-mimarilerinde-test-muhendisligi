@@ -154,8 +154,6 @@ kubectl apply -f keda/scaled-object.yaml
 kubectl apply -f argocd/application.yaml
 ```
 
----
-
 ## 🎥 Canlı Sunum Can Simidi (Demo Videosu)
 Sunum esnasında canlı demoda çıkabilecek teknik aksaklıklara karşı hazırlanan yedek demo videosu linki:
 * **Demo Videosu**: [Google Drive / YouTube Linki]([https://drive.google.com/drive/folders/your-folder-id-here](https://drive.google.com/file/d/1DgMoOCOM7MNNNxCdYwgvzoprd1IPVQKO/view?usp=sharing))
